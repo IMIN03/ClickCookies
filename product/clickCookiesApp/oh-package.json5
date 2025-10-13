@@ -1,0 +1,15 @@
+{
+  "name": "clickcookiesapp",
+  "version": "1.0.0",
+  "description": "Please describe the basic information.",
+  "main": "",
+  "author": "kurumi",
+  "license": "",
+
+  "dependencies": {
+    "datastorage": "file:../../common/datastorage",
+    "utils": "file:../../common/utils",
+    "workshop": "file:../../feature/workshop",
+    "shop": "file:../../feature/shop"
+  }
+}
