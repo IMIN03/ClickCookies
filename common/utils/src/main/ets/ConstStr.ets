@@ -11,6 +11,7 @@ export class ConstStr{
 
   static readonly TOTAL_COOKIES = 'totalCookies'
 
+  static readonly PLAYER_LIST = 'playerList'
   // 设备类型常量
   static readonly DEVICE_CURSOR = '光标'
   static readonly DEVICE_GRANDMA = '奶奶'

@@ -6,7 +6,6 @@ import { MemoryModel } from "../model/MemoryModel"
 export class MemoryData{
   private _memoryPlayerList: MemoryModel[] = []
 
-
   private _totalCookies: number = 0
 
   private clickLevel:number = 1
@@ -38,6 +37,7 @@ export class MemoryData{
     return this._memoryPlayerList
   }
 
+  //内存类型转到状态类型
   public memoryTo(memoryModelArray: MemoryModel[]) {
       const tempArray:DeviceViewModel[] = []
 

@@ -2,6 +2,7 @@ import {Workshop,MemoryData, DeviceViewModel} from 'workshop'
 import {Shop} from 'shop'
 import {ConstStr,ConstUrl, DeviceModel} from 'utils'
 import {TabBarBuilder} from '../builders/Builders'
+import { MemoryModel, MemoryModelData } from 'workshop/src/main/ets/model/MemoryModel'
 
 const TAG = 'qwq - product_index'
 
@@ -32,26 +33,42 @@ struct Index {
             totalCookiesAdd:(num:number)=>{
               this.totalCookies += num
               MemoryData.getInstance().totalCookies = this.totalCookies
-              console.info(TAG,`totalCookies: ${this.totalCookies}`)
             }
           })
         }.tabBar(TabBarBuilder(ConstUrl.WORKSHOP_TABBUILDER_ICON,ConstStr.WORKSHOP))
 
         TabContent(){
           Shop({
-
-
             playerListAdd:(device:DeviceModel)=>{
               let temp = this.playerList
               let idx = -1
               let newDevice = new DeviceViewModel(device,1)
-              if( (idx = temp.findIndex((dev)=>{newDevice.name == dev.name})) != -1 ){
+              idx = temp.findIndex((dev)=>{
+                if(newDevice.name == dev.name)
+                  return true
+                return false
+              })
+              if( idx  != -1 ){
                 temp[idx].count += newDevice.count
               }else {
                 temp.push(newDevice)
               }
+
               this.playerList = temp
-              console.info(TAG,`listLength:${this.playerList.length}`)
+
+              //MemoryData.getInstance().memoryPlayerList = temp
+
+              const cleanMemoryList:MemoryModel[] = temp.map(item => {
+                const memoryModel = new MemoryModel()
+                memoryModel.name = item.name
+                memoryModel.icon = item.icon
+                memoryModel.psc = item.psc
+                memoryModel.description = item.description
+                memoryModel.count = item.count
+                return memoryModel
+              })
+              MemoryData.getInstance().memoryPlayerList = cleanMemoryList
+
             }
           })
         }.tabBar(TabBarBuilder(ConstUrl.SHOP_TABBUILDER_ICON,ConstStr.SHOP))

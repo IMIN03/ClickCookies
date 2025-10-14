@@ -4,6 +4,8 @@ import { window } from '@kit.ArkUI';
 import { MemoryData } from 'workshop';
 import { DataStorage,PreferenceUtil} from 'datastorage';
 import { ConstStr} from 'utils';
+import { data } from '@kit.TelephonyKit';
+import { MemoryModel } from 'workshop/src/main/ets/model/MemoryModel';
 
 
 const DOMAIN = 0x0000;
@@ -55,7 +57,20 @@ export default class EntryAbility extends UIAbility {
   private loadGameData(): void {
     try {
       const memoryData = MemoryData.getInstance();
+      const dataStorage = DataStorage.getInstance()
       const store = new PreferenceUtil().getPreference(this.context)
+
+      dataStorage.LoadFromStorage(ConstStr.WORKSHOP_STORAGE_URL,memoryData.memoryPlayerList,this.context,(data:Record<string,Object>)=>{
+        const model = new MemoryModel()
+
+        model.name = String(data.name || 'null')
+        model.icon = String(data.icon || '')
+        model.psc = Number(data.psc || 0)
+        model.description = String(data.description || 'null')
+        model.count = Number(data.count || 0)
+
+        return model
+      })
 
       const savedCookies = store.getSync(ConstStr.TOTAL_COOKIES, 0) as number;
       memoryData.totalCookies = savedCookies;
@@ -66,11 +81,16 @@ export default class EntryAbility extends UIAbility {
     }
   }
 
+  /**
+   * @throws
+   */
   private saveGameData(): void {
     try {
       const memoryData = MemoryData.getInstance();
       const dataStorage = DataStorage.getInstance()
       const store = new PreferenceUtil().getPreference(this.context)
+
+      dataStorage.SaveToStorage(ConstStr.WORKSHOP_STORAGE_URL,memoryData.memoryPlayerList,this.context)
 
       store.putSync(ConstStr.TOTAL_COOKIES,memoryData.totalCookies)
       store.flush();

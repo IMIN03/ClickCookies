@@ -15,13 +15,11 @@ export class DataStorage{
     return DataStorage.instance
   }
 
-  public LoadFromStorage<T>(constKey:string,objArray:T[],context:common.UIAbilityContext){
+  public LoadFromStorage<T>(constKey:string,objArray:T[],context:common.UIAbilityContext,factory: (data: Record<string, Object>) => T){
     try {
       const filePath = `${context.filesDir}${ConstMap.get(constKey)}`
 
       if(!fs.accessSync(filePath)){
-        // const file = fs.openSync(filePath,fs.OpenMode.CREATE)
-        // fs.closeSync(file)
         console.info(LoadTAG,`${ConstMap.get(constKey)} dont exist.`)
         return
       }
@@ -41,10 +39,14 @@ export class DataStorage{
       const uint8Array = new Uint8Array(buffer,0,byteRead)
       const Decoder = util.TextDecoder.create('utf-8',{ignoreBOM:true})
       const jsonStr = Decoder.decodeToString(uint8Array)
-      const parseArray:T[] = JSON.parse(jsonStr)
+
+      const parseArray:Record<string,object>[] = JSON.parse(jsonStr) as Record<string,object>[]
+      objArray.length = 0
 
       for(let i=0;i<parseArray.length;i++){
-        objArray.push(parseArray[i])
+        const reconstructedObj = factory(parseArray[i])
+
+        objArray.push(reconstructedObj)
       }
 
       console.info(LoadTAG,'Load is completed.')
@@ -56,7 +58,6 @@ export class DataStorage{
   public SaveToStorage<T>(constKey:string,objArray:T[],context:common.UIAbilityContext){
     try{
       const filePath = `${context.filesDir}${ConstMap.get(constKey)}`
-      console.info(SaveTag,`Ready to save to ${filePath}`)
 
       const jsonStr = JSON.stringify(objArray)
       const encoder = util.TextEncoder.create('utf-8')
@@ -67,7 +68,6 @@ export class DataStorage{
       const byteWritten = fs.writeSync(file.fd,uint8Array.buffer)
       fs.closeSync(file)
 
-      console.info(LoadTAG,'Save is completed.')
     }catch (error){
       console.info(SaveTag,'Failed to load.')
     }
