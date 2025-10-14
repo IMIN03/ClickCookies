@@ -1,6 +1,6 @@
 import {Workshop,MemoryData, DeviceViewModel} from 'workshop'
 import {Shop} from 'shop'
-import {ConstStr,ConstUrl} from 'utils'
+import {ConstStr,ConstUrl, DeviceModel} from 'utils'
 import {TabBarBuilder} from '../builders/Builders'
 
 const TAG = 'qwq - product_index'
@@ -39,11 +39,17 @@ struct Index {
 
         TabContent(){
           Shop({
-            playerListAdd:(key:string)=>{
+
+
+            playerListAdd:(device:DeviceModel)=>{
               let temp = this.playerList
-              let newDevice = new DeviceViewModel()
-              newDevice.name = key
-              temp.push(newDevice)
+              let idx = -1
+              let newDevice = new DeviceViewModel(device,1)
+              if( (idx = temp.findIndex((dev)=>{newDevice.name == dev.name})) != -1 ){
+                temp[idx].count += newDevice.count
+              }else {
+                temp.push(newDevice)
+              }
               this.playerList = temp
               console.info(TAG,`listLength:${this.playerList.length}`)
             }

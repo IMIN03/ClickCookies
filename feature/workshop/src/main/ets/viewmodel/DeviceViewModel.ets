@@ -1,3 +1,5 @@
+import { DeviceModel } from "utils"
+
 @ObservedV2
 export class DeviceViewModel {
   @Trace name: string = 'null'
@@ -6,14 +8,13 @@ export class DeviceViewModel {
   @Trace description: string = '123'
   @Trace count: number = 0
 
-  // constructor(name: string , icon: string, psc: number, description: string, count: number) {
-  //   this.name = name
-  //   this.icon = icon
-  //   this.psc = psc
-  //   this.description = description
-  //   this.count = count
-  // }
-
+  constructor(device:DeviceModel,c:number) {
+    this.name = device.name
+    this.icon = device.icon
+    this.psc = device.psc
+    this.description = device.description
+    this.count = c
+  }
 
   getTotalOutput(): number {
     return isNaN(this.psc) ? 0 : this.psc * this.count

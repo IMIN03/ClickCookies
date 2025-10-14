@@ -1,4 +1,4 @@
-import {  DeviceModel } from "./model/DeviceModel"
+import {  DeviceModel } from "utils/src/main/ets/model/DeviceModel"
 import { DeviceViewModel } from "./viewmodel/DeviceViewModel"
 
 @ComponentV2
@@ -10,7 +10,7 @@ export struct WorkshopListItem{
       RelativeContainer() {
         // 左侧图标
         Row() {
-          Image('')
+          Image($r(this.deviceInfo.icon))
             .width(40)
             .height(40)
             .objectFit(ImageFit.Contain)
@@ -24,7 +24,7 @@ export struct WorkshopListItem{
 
         // 设备名称
         Row() {
-          Text()
+          Text(this.deviceInfo.name)
             .fontSize(16)
             .fontWeight(FontWeight.Medium)
             .fontColor('#333333')
@@ -38,7 +38,7 @@ export struct WorkshopListItem{
 
         // 右侧数量和产出信息
         Row() {
-          Text()
+          Text(`${this.deviceInfo.count} x ${this.deviceInfo.psc}/s`)
             .fontSize(14)
             .fontColor('#666666')
         }
