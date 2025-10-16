@@ -3,6 +3,7 @@ import {Shop} from 'shop'
 import {ConstStr,ConstUrl, DeviceModel} from 'utils'
 import {TabBarBuilder} from '../builders/Builders'
 import { MemoryModel, MemoryModelData } from 'workshop/src/main/ets/model/MemoryModel'
+import { promptAction, PromptAction } from '@kit.ArkUI'
 
 const TAG = 'qwq - product_index'
 
@@ -39,37 +40,16 @@ struct Index {
 
         TabContent(){
           Shop({
-            playerListAdd:(device:DeviceModel)=>{
-              let temp = this.playerList
-              let idx = -1
-              let newDevice = new DeviceViewModel(device,1)
-              idx = temp.findIndex((dev)=>{
-                if(newDevice.name == dev.name)
-                  return true
-                return false
-              })
-              if( idx  != -1 ){
-                temp[idx].count += newDevice.count
-              }else {
-                temp.push(newDevice)
-              }
+            playerListAdd:(device:DeviceModel,buyNum:number)=>{
+              PlayerListAdd(device,buyNum,
+                this.getUIContext().getPromptAction(),
+                this.playerList,this.totalCookies,
+                (newNum)=>{
+                  this.totalCookies -= newNum
+                  MemoryData.getInstance().totalCookies = this.totalCookies
+                })},
 
-              this.playerList = temp
-
-              //MemoryData.getInstance().memoryPlayerList = temp
-
-              const cleanMemoryList:MemoryModel[] = temp.map(item => {
-                const memoryModel = new MemoryModel()
-                memoryModel.name = item.name
-                memoryModel.icon = item.icon
-                memoryModel.psc = item.psc
-                memoryModel.description = item.description
-                memoryModel.count = item.count
-                return memoryModel
-              })
-              MemoryData.getInstance().memoryPlayerList = cleanMemoryList
-
-            }
+            playerListSort:()=>{PlayerListSort(this.playerList)}
           })
         }.tabBar(TabBarBuilder(ConstUrl.SHOP_TABBUILDER_ICON,ConstStr.SHOP))
 
@@ -88,4 +68,55 @@ struct Index {
       .scrollable(false)
     }
   }
+}
+
+function PlayerListAdd(device:DeviceModel,buyNum:number,Prompt:PromptAction,playerList:DeviceViewModel[],currentCookies:number,setCookies:(newNum:number)=>void){
+
+  let temp = playerList
+  let idx = -1
+  let newDevice = new DeviceViewModel(device,buyNum)
+  idx = temp.findIndex((dev)=>{
+    if(newDevice.name == dev.name)
+      return true
+    return false
+  })
+
+  //扣除
+  if(currentCookies - newDevice.count * device.price >= 0) {
+    setCookies(newDevice.count * device.price)
+  }else {
+    Prompt.showToast({
+      message: "Cookie 不足",
+      duration: 2000,
+      showMode: promptAction.ToastShowMode.TOP_MOST,
+      bottom: 85
+    })
+    return
+  }
+
+  if( idx  != -1 ){
+      temp[idx].count += newDevice.count
+  }else {
+    temp.push(newDevice)
+  }
+
+  playerList = temp
+
+  const cleanMemoryList:MemoryModel[] = temp.map(item => {
+    const memoryModel = new MemoryModel()
+    memoryModel.name = item.name
+    memoryModel.icon = item.icon
+    memoryModel.psc = item.psc
+    memoryModel.description = item.description
+    memoryModel.count = item.count
+    return memoryModel
+  })
+  MemoryData.getInstance().memoryPlayerList = cleanMemoryList
+  return true
+}
+
+function PlayerListSort(playerList:DeviceViewModel[]){
+  playerList.sort((a:DeviceViewModel,b:DeviceViewModel)=>{
+    return a.psc - b.psc
+  })
 }

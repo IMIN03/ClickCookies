@@ -4,7 +4,6 @@ import { window } from '@kit.ArkUI';
 import { MemoryData } from 'workshop';
 import { DataStorage,PreferenceUtil} from 'datastorage';
 import { ConstStr} from 'utils';
-import { data } from '@kit.TelephonyKit';
 import { MemoryModel } from 'workshop/src/main/ets/model/MemoryModel';
 
 

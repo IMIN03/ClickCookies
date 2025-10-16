@@ -1,10 +1,11 @@
-import {DeviceModel, PresetDeviceData} from 'utils'
+import {DeviceModel, PresetDeviceData,formatNumber} from 'utils'
 
 @ComponentV2
 export struct Shop{
   @Local presetList:DeviceModel[] = []
 
-  @Event playerListAdd: (device:DeviceModel) => void = () => {};
+  @Event playerListAdd: (device:DeviceModel,buyNum:number) => void = () => {};
+  @Event playerListSort: ()=>void = ()=>{}
 
   aboutToAppear(): void {
     this.presetList = PresetDeviceData.getAllDeviceData()
@@ -17,63 +18,89 @@ export struct Shop{
         .fontSize(20)
         .fontWeight(FontWeight.Bold)
         .margin({ bottom: 16 })
-      
-      // 使用List显示所有可购买的设备
-      List({ space: 8 }) {
+
+      // 改为两列 Grid 布局
+      Grid() {
         ForEach(this.presetList, (device:DeviceModel, index:number) => {
-          ListItem() {
-            Row() {
-              Column() {
-                Text(device.name)
-                  .fontSize(16)
-                  .fontWeight(FontWeight.Medium)
-                  .fontColor('#333333')
-                
-                Text(device.description)
-                  .fontSize(12)
-                  .fontColor('#666666')
-                  .maxLines(2)
-                  .textOverflow({ overflow: TextOverflow.Ellipsis })
-                  .margin({ top: 4 })
-                
-                Text(`产出: ${device.psc}/秒`)
-                  .fontSize(12)
-                  .fontColor('#4CAF50')
-                  .margin({ top: 4 })
+          GridItem() {
+            Column() {
+              // 名字（上方）
+              Text(device.name)
+                .fontSize(16)
+                .fontWeight(FontWeight.Medium)
+                .fontColor('#333333')
+                .margin({ bottom: 6 })
+
+              // 图片（左右居中）
+              Row() {
+                Image($r(device.icon))
+                  .width(56)
+                  .height(56)
+                  .objectFit(ImageFit.Contain)
               }
-              .alignItems(HorizontalAlign.Start)
-              .layoutWeight(1)
-              .padding({ left: 12 })
-              
-              Button('购买')
-                .fontSize(14)
-                .height(36)
-                .width(80)
-                .borderRadius(6)
-                .backgroundColor('#4CAF50')
-                .fontColor($r('sys.color.comp_background_list_card'))
-                .onClick(() => {
-                  console.info('qwq - shop', `购买设备[${index}]: ${this.presetList[index].name}, 产出: ${PresetDeviceData.getDeviceData(this.presetList[index].name)?.psc}`)
+              .justifyContent(FlexAlign.Center)
+              .margin({ bottom: 6 })
 
-                  this.playerListAdd(PresetDeviceData.getDeviceData(this.presetList[index].name) as DeviceModel)
+              // 价格（下方，单位化展示）
+              Text(`价格: ${formatNumber(device.price)}`)
+                .fontSize(13)
+                .fontColor('#FF9800')
+                .margin({ bottom: 8 })
 
-                })
+              // 底部两个购买按钮
+              Row() {
+                Button(){
+                  Text('购买1个')
+                    .fontSize(12)
+                    .maxLines(1)
+                    .textOverflow({ overflow: TextOverflow.Ellipsis })
+                    .textAlign(TextAlign.Center)
+                    .width('100%')
+                }
+                  .height(32)
+                  .layoutWeight(1)
+                  .backgroundColor('#4CAF50')
+                  .fontColor($r('sys.color.comp_background_list_card'))
+                  .borderRadius(6)
+                  .onClick(() => {
+                    this.playerListAdd(device,1)
+                    this.playerListSort()
+                  })
+
+                Blank().width(8)
+
+                Button(){
+                  Text('购买10个')
+                    .fontSize(12)
+                    .maxLines(1)
+                    .textOverflow({ overflow: TextOverflow.Ellipsis })
+                    .textAlign(TextAlign.Center)
+                    .width('100%')
+                }
+                  .height(32)
+                  .layoutWeight(1)
+                  .backgroundColor('#4CAF50')
+                  .fontColor($r('sys.color.comp_background_list_card'))
+                  .borderRadius(6)
+                  .onClick(() => {
+                    this.playerListAdd(device,10)
+                    this.playerListSort()
+                  })
+              }
             }
             .width('100%')
-            .height(80)
+            .padding(12)
             .backgroundColor($r('sys.color.comp_background_list_card'))
             .borderRadius(8)
-            .padding({ left: 16, right: 16 })
-            .border({
-              width: 1,
-              color: '#E0E0E0'
-            })
+            .border({ width: 1, color: '#E0E0E0' })
           }
         })
       }
+      .columnsTemplate('1fr 1fr')
+      .rowsGap(12)
+      .columnsGap(12)
       .width('100%')
       .layoutWeight(1)
-      .scrollBar(BarState.Auto)
     }
     .width('100%')
     .height('100%')
