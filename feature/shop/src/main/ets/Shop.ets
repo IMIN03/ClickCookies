@@ -19,19 +19,16 @@ export struct Shop{
         .fontWeight(FontWeight.Bold)
         .margin({ bottom: 16 })
 
-      // 改为两列 Grid 布局
       Grid() {
         ForEach(this.presetList, (device:DeviceModel, index:number) => {
           GridItem() {
             Column() {
-              // 名字（上方）
               Text(device.name)
                 .fontSize(16)
                 .fontWeight(FontWeight.Medium)
                 .fontColor('#333333')
                 .margin({ bottom: 6 })
 
-              // 图片（左右居中）
               Row() {
                 Image($r(device.icon))
                   .width(56)
@@ -41,13 +38,11 @@ export struct Shop{
               .justifyContent(FlexAlign.Center)
               .margin({ bottom: 6 })
 
-              // 价格（下方，单位化展示）
               Text(`价格: ${formatNumber(device.price)}`)
                 .fontSize(13)
                 .fontColor('#FF9800')
                 .margin({ bottom: 8 })
 
-              // 底部两个购买按钮
               Row() {
                 Button(){
                   Text('购买1个')

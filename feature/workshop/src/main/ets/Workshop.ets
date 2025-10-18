@@ -1,6 +1,9 @@
 import {ConstStr,ConstUrl} from 'utils'
 import { DeviceViewModel } from './viewmodel/DeviceViewModel'
 import { WorkshopListItem } from './WorkshopListItem'
+import {formatNumber} from 'utils'
+
+const TAG = 'qwq - workshopPage'
 
 @ComponentV2
 export struct Workshop{
@@ -9,14 +12,37 @@ export struct Workshop{
   @Param totalCookies: number = 0
   @Param clickLevel: number = 1
   @Param cookiesPerClick: number = 1
+  @Param totalPSC:number = 0;
 
   @Event totalCookiesAdd: (num:number) => void = () => {};
+
+  @Local timeIntervalId:number = 0
+  @Local timeCode:number = 1000
+
+  // @Monitor('playerDeviceList,playerDeviceList.0.count')
+  // onListChange(monitor:IMonitor){
+  //   let result =  (monitor.value('playerDeviceList')?.now as DeviceViewModel[]).reduce<number>((sum:number, curDevice:DeviceViewModel)=>{
+  //     return sum+curDevice.psc
+  //   },0)
+  //   console.info(TAG,result)
+  // }
+
+  aboutToAppear(): void {
+    this.timeIntervalId = setInterval(()=>{
+      // console.info(TAG,`id:${this.timeIntervalId},,totalPSC: ${this.totalPSC}`)
+      this.totalCookiesAdd(this.totalPSC)
+    },this.timeCode)
+  }
+
+  aboutToDisappear(): void {
+
+  }
 
   build() {
     Column() {
       // 顶部 - Cookies 数量展示
       Row() {
-        Text(`Cookies: ${this.totalCookies}`)
+        Text(`Cookies: ${formatNumber(this.totalCookies)}`)
           .fontSize(18)
           .fontWeight(FontWeight.Bold)
           .fontColor('#333333')

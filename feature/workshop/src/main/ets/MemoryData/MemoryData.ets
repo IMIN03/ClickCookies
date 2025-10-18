@@ -7,7 +7,7 @@ export class MemoryData{
   private _memoryPlayerList: MemoryModel[] = []
 
   private _totalCookies: number = 0
-
+  private _totalPSC: number = 0
   private clickLevel:number = 1
   private cookiesPerClick:number = 0
 
@@ -19,6 +19,15 @@ export class MemoryData{
       MemoryData.instance = new MemoryData()
     }
     return MemoryData.instance
+  }
+
+
+  public set totalPSC(value: number) {
+    this._totalPSC = value
+  }
+
+  public get totalPSC(): number {
+    return this._totalPSC
   }
 
   public set totalCookies(value: number) {

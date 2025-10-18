@@ -9,7 +9,9 @@ export class ConstStr{
   static readonly ACCIDENT_STORAGE_URL = 'accidentUrl';
   static readonly SKILLTREE_STORAGE_URL = 'skillTreeUrl';
 
+  // 基础数据存储str
   static readonly TOTAL_COOKIES = 'totalCookies'
+  static readonly TOTAL_PSC = 'totalPSC'
 
   static readonly PLAYER_LIST = 'playerList'
   // 设备类型常量

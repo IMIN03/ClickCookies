@@ -71,8 +71,9 @@ export default class EntryAbility extends UIAbility {
         return model
       })
 
-      const savedCookies = store.getSync(ConstStr.TOTAL_COOKIES, 0) as number;
-      memoryData.totalCookies = savedCookies;
+      // 此处添加load各普通数据
+      memoryData.totalCookies = store.getSync(ConstStr.TOTAL_COOKIES, 0) as number;
+      memoryData.totalPSC = store.getSync(ConstStr.TOTAL_PSC,0) as number
 
       hilog.info(DOMAIN, 'GameData', 'Game data loaded successfully');
     } catch (error) {
@@ -91,7 +92,9 @@ export default class EntryAbility extends UIAbility {
 
       dataStorage.SaveToStorage(ConstStr.WORKSHOP_STORAGE_URL,memoryData.memoryPlayerList,this.context)
 
+      // 此处添加save各基础数据
       store.putSync(ConstStr.TOTAL_COOKIES,memoryData.totalCookies)
+      store.putSync(ConstStr.TOTAL_PSC,memoryData.totalPSC)
       store.flush();
 
       hilog.info(DOMAIN, 'GameData', 'Game data saved successfully');

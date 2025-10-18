@@ -10,7 +10,7 @@ export class DeviceModel{
     if (icon) this.icon = icon;
     if (psc) this.psc = psc;
     if (description) this.description = description;
-    if(price) this.price = price
+    if (price) this.price = price
   }
 }
 

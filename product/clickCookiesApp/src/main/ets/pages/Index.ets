@@ -10,16 +10,17 @@ const TAG = 'qwq - product_index'
 @Entry
 @ComponentV2
 struct Index {
-
   @Local playerList:DeviceViewModel[] = []
   @Local totalCookies: number = 0
   @Local clickLevel: number = 1
+  @Local totalPSC:number = 0
   @Local cookiesPerClick: number = 1
 
   aboutToAppear() {
     const memoryData = MemoryData.getInstance()
 
     this.totalCookies = memoryData.totalCookies
+    this.totalPSC = memoryData.totalPSC
     this.playerList = memoryData.memoryTo(memoryData.memoryPlayerList)
   }
 
@@ -28,7 +29,11 @@ struct Index {
       Tabs(){
         TabContent(){
           Workshop({
+            // 基础数据
             totalCookies:this.totalCookies,
+            totalPSC:this.totalPSC,
+
+            // 玩家设备列表
             playerDeviceList:this.playerList,
 
             totalCookiesAdd:(num:number)=>{
@@ -41,12 +46,18 @@ struct Index {
         TabContent(){
           Shop({
             playerListAdd:(device:DeviceModel,buyNum:number)=>{
-              PlayerListAdd(device,buyNum,
-                this.getUIContext().getPromptAction(),
-                this.playerList,this.totalCookies,
+              PlayerListAdd(device,buyNum, this.getUIContext().getPromptAction(), this.playerList,this.totalCookies,
                 (newNum)=>{
+
                   this.totalCookies -= newNum
+
+                  // 所有对响应式数据的操作都同步到memoryData
                   MemoryData.getInstance().totalCookies = this.totalCookies
+                },
+                (addNum)=>{
+                  this.totalPSC += addNum
+
+                  MemoryData.getInstance().totalPSC = this.totalPSC
                 })},
 
             playerListSort:()=>{PlayerListSort(this.playerList)}
@@ -70,8 +81,7 @@ struct Index {
   }
 }
 
-function PlayerListAdd(device:DeviceModel,buyNum:number,Prompt:PromptAction,playerList:DeviceViewModel[],currentCookies:number,setCookies:(newNum:number)=>void){
-
+function PlayerListAdd(device:DeviceModel,buyNum:number,Prompt:PromptAction,playerList:DeviceViewModel[],currentCookies:number,setCookies:(newNum:number)=>void,addPSC:(addNum:number)=>void){
   let temp = playerList
   let idx = -1
   let newDevice = new DeviceViewModel(device,buyNum)
@@ -81,9 +91,10 @@ function PlayerListAdd(device:DeviceModel,buyNum:number,Prompt:PromptAction,play
     return false
   })
 
-  //扣除
+  //购买成功时的回调函数参数
   if(currentCookies - newDevice.count * device.price >= 0) {
     setCookies(newDevice.count * device.price)
+    addPSC(newDevice.psc * buyNum)
   }else {
     Prompt.showToast({
       message: "Cookie 不足",
@@ -114,6 +125,7 @@ function PlayerListAdd(device:DeviceModel,buyNum:number,Prompt:PromptAction,play
   MemoryData.getInstance().memoryPlayerList = cleanMemoryList
   return true
 }
+
 
 function PlayerListSort(playerList:DeviceViewModel[]){
   playerList.sort((a:DeviceViewModel,b:DeviceViewModel)=>{
